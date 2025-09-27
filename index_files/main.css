@@ -385,25 +385,31 @@ html .ro {
   -webkit-transform: translateX(-50%);
 	-ms-transform: translateX(-50%);
 	transform: translateX(-50%);
-  bottom: 3%;
+  bottom: 10%;
   z-index: 15;
 }
 
 .lang_switcher_outer {
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-family);
   position: absolute;
-  top: 4rem;
-  right: 2rem;
+  right: -4.8rem;
+  top: 2rem;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
-  height: 90px;
-  width: 60px;
-  z-index: 22;
-  cursor: pointer;
-  color: #ee9800;
-  text-transform: uppercase;
-  border-radius: 100%;
+  border: 2px solid #ed4c2b;
+	border-radius: 10px;
+	width: fit-content;
+	padding-left: 8px;
+	padding-right: 8px;
+	height: 33px;
+	z-index: 5;
+	cursor: pointer;
+	text-transform: uppercase;
+	background: #022aae;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .lang_switcher_outer.act .lang_list {
@@ -429,7 +435,6 @@ html .ro {
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
-    padding: 0 .7rem;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -437,10 +442,6 @@ html .ro {
     cursor: pointer;
     position: relative;
     z-index: 3;
-    background: linear-gradient(180deg, #bc783a 0%, #dd8c35 49.52%, #974f1e 100%);
-    border: 1px solid #a7622e;
-		border-radius: 1rem;
-    height: 4em;
     color: #fff;
 }
 
@@ -1663,6 +1664,10 @@ html.vn .button span {
 	margin-top: 2rem
 }
 
+.popup_1 .popup__btn {
+	margin-top: 2rem
+}
+
 .popup__coins {
 	position: absolute;
 	left: 50.5%;
@@ -1705,14 +1710,22 @@ html.vn .button span {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
+	-webkit-filter: drop-shadow(0 0 2.6rem #d900e4);
+  filter: drop-shadow(0 0 2.6rem #d900e4);
+
+	font-family: "Druk Medium", sans-serif;
+  font-style: italic;
+  font-weight: 500;
 }
+
+
 
 @media(max-width: 620px) {
 	.popup__inner {
-		top: 18.0rem;
-		width: 52rem;
-		min-height: 46rem
-	}
+    top: 27.3rem;
+    width: 46rem;
+    min-height: 46rem;
+  }
 }
 
 .popup__window {
@@ -1735,18 +1748,21 @@ html.vn .button span {
 }
 
 .popup__title span {
-  font-family: var(--third-family);
-	display: inline-block;
-	font-size: 48px;
-  font-weight: 900;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-	-webkit-text-stroke: 1px #72032B;
+    display: inline-block;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 4.8rem;
+    line-height: 115.646%;
+    letter-spacing: .1945rem;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0);
+    -webkit-text-stroke: .2rem #fff;
+    text-stroke: .2rem #fff;
+    -webkit-background-clip: text;
+    background-clip: text;
 }
-
 .popup__win span {
-  font-family: var(--third-family);
+  
   font-weight: 900;
   font-size: 85px;
   text-transform: uppercase;
@@ -1755,18 +1771,13 @@ html.vn .button span {
   -webkit-text-stroke: 4px #72032B;
 }
 
-.popup__bonus {
-	margin: 1.5rem 0
-}
-
 .popup__bonus span {
-  font-family: var(--third-family);
-  font-weight: 600;
-  font-size: 33px;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-  -webkit-text-stroke: 1.2px #72032B;
+    display: inline;
+    color: #fff;
+    text-align: center;
+    font-size: 3.4rem;
+    line-height: 1.2;
+    text-transform: uppercase;
 }
 
 .popup__subtitle {
@@ -1774,37 +1785,34 @@ html.vn .button span {
 }
 
 .popup__subtitle span {
-	color: #fff;
-	text-align: center;
-	font-size: 2rem;
-	text-transform: uppercase
+  color: #fff;
+  text-align: center;
+  font-size: 2rem;
+  text-transform: uppercase;
 }
 
 .popup__btn {
-	position: relative;
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: flex;
-	-webkit-box-align: center;
-	-ms-flex-align: center;
-	align-items: center;
-	-webkit-box-pack: center;
-	-ms-flex-pack: center;
-	justify-content: center;
-	text-align: center;
-	margin: 1rem auto 1.5rem;
-  width: 100%;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    text-align: center;
+    margin: 1rem auto 1.5rem;
+    width: 35rem;
 }
 
 .popup__btn span {
-	font-family: var(--third-family);
-  font-weight: 900;
-  font-size: 48px !important;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-  white-space: nowrap;
+	font-family: "Druk Wide Cy Web", sans-serif;
+	font-weight: bold;
+	font-style: normal
 }
+
 
 .popup__img {
 	position: absolute;
@@ -1831,17 +1839,20 @@ html.vn .button span {
 }
 
 .popup__terms {
-	font-family: var(--third-family);
-  font-weight: 600;
-  font-size: 26px;
-  text-transform: uppercase;
-  text-align: center;
-  color: #d34d6d;
-	-webkit-text-stroke: 2px #72032B;
-  margin: 20px 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #ff4e8d;
+  font-size: 1.8rem;
+  font-size: clamp(12px, 1.8rem, 1.8rem);
+  font-weight: 400;
+  line-height: 1;
+  text-decoration: none;
+  border-bottom: 1px solid #ff4e8d;
   -webkit-transition: all .2s;
-	transition: all .2s
+  transition: all .2s;
 }
+
 
 .popup__terms:hover {
 	color: #fff;
@@ -2311,7 +2322,7 @@ html.vn .button span {
 	}
 
   .popup__title span {
-    font-size: 36px;
+    font-size: 2.8rem;
   }
 
   .popup__win span {
@@ -2319,25 +2330,8 @@ html.vn .button span {
     -webkit-text-stroke: 2.5px #72032B;
   }
 
-  .popup__bonus span {
-    font-size: 25px;
-    -webkit-text-stroke: 1px #72032B;
-  }
-
-  .popup__btn span {
-    font-size: 36px !important; 
-    -webkit-text-stroke: 2px #096A3C;
-  }
-
-  
-
-	.lang_switcher_outer {
-    width: 6rem;
-    right: -1.8rem;
-  }
 
 	.lang_switcher_outer .lang_switcher .curr_lang {
-		width: 6rem;
 		margin: 0 2.5em 0 .6em
 	}
 
@@ -2394,10 +2388,6 @@ html.vn .button span {
 				height: 36rem;
 			}
 
-		.lang_switcher_outer {
-        width: 6rem;
-        right: -1.8rem;
-    }
 
 			#animation_container {
 				margin-bottom: 5rem;
@@ -2408,16 +2398,13 @@ html.vn .button span {
 			}
 
 			body {
-				overflow-y: hidden;
+				overflow-y: hidden !important;
 			}
 
 }
 
 @media (max-width: 400px) {
-	    .lang_switcher_outer {
-        width: 6rem;
-    }
-
+	    
 		.lane {
 			bottom: 120px;
 		}
@@ -2642,6 +2629,14 @@ html.vn .button span {
 @media(max-width: 620px) {
 	.sk .game .button span {
 		font-size: 2.3rem
+	}
+
+	.ru .popup .button span {
+    font-size: 2.2rem;
+	}
+
+	.ru .popup__bonus span {
+		    font-size: 2.8rem;
 	}
 }
 
