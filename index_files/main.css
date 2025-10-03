@@ -1982,7 +1982,7 @@ html.is-loading body {
   backface-visibility: hidden;
   will-change: transform;
 
-  transition: transform .35s ease;
+  transition: transform .45s ease-out;
   z-index: 1;
   pointer-events: none;
 
@@ -2005,17 +2005,17 @@ html.is-loading body {
   width: 1px; height: 1px;
 }
 
-/* Фишки (едут вместе с треком) */
 .lanes{
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
+
 .lane{
   position: absolute;
   bottom: 180px;
   width: 140px; height: 140px;
-  transform: translateX(-50%); /* значит left — это центр */
+  transform: translateX(-50%);
 }
 .gold-egg{ bottom:200px; }
 
@@ -2040,8 +2040,6 @@ html.is-loading body {
 }
 
 
-
-/* Картинки фишек + анимация флипа */
 .lane img{
   width: 100%;
   display: block;
@@ -2049,41 +2047,49 @@ html.is-loading body {
   backface-visibility: hidden;
   transition: transform 200ms ease;
 }
-.lane img.flip-out{ transform: rotateY(90deg); }  /* схлопывание */
-.lane img.flip-in { transform: rotateY(0deg);   }  /* обратное раскрытие */
 
-/* Курица — поверх, не едет с треком */
+.lane img.flip-out{ transform: rotateY(90deg); }   
+.lane img.flip-in { transform: rotateY(0deg);   } 
+
 .overlay{
   position: absolute;
   inset: 0;
   z-index: 3;
   pointer-events: none;
 }
+
 .chicken{
   position: absolute;
   bottom: 21px;
   left: 0;
   width: 120px; height: auto;
-  transition: left .35s ease;
+  transition: left .45s ease-in-out;
 }
 
-/* Прыжок курицы */
 @keyframes chickenHop{
-  0%{   transform: translateY(0); }
-  40%{  transform: translateY(-52px); }
-  100%{ transform: translateY(0); }
+  0%   { transform: translateY(0); }
+  45%  { transform: translateY(-15px); } 
+  100% { transform: translateY(0); }
 }
-.chicken.hop{ animation: chickenHop .35s ease-out; }
+.chicken.hop{ animation: chickenHop .55s ease-out; }
 
 
 @keyframes chickenCelebrate {
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-18px); }
+  50%      { transform: translateY(-18px); } 
+}
+.chicken.celebrate {
+  animation: chickenCelebrate 0.4s ease-in-out infinite; 
 }
 
-.chicken.celebrate {
-  animation: chickenCelebrate 0.35s ease-in-out infinite;
+.button:disabled,
+.button.disabled {
+  opacity: .6;
+  pointer-events: none;
+  filter: grayscale(0.2);
 }
+
+
 
 
 @-webkit-keyframes popup-img-scaling {
