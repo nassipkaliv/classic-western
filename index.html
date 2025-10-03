@@ -578,9 +578,9 @@
 </script>
 
 
-  <script>
+<script>
 /* ===== НАСТРОЙКИ ===== */
-const CELEBRATE_BEFORE_POPUP_MS = 900;  // сколько курица «празднует» перед попапом
+const POPUP_DELAY_MS = 1200; // задержка перед попапом после победного прыжка (как было)
 
 /* ===== DOM ===== */
 const goBtn       = document.getElementById('go-btn');
@@ -605,7 +605,6 @@ const popupWin    = document.getElementById('popup__window_1');
 let isAnimating = false;
 let sparklesPlayed = false;
 let popupShown = false;
-let finalCelebrateDone = false;
 
 /* ===== STATE ===== */
 let step = 0;
@@ -645,13 +644,19 @@ function raiseChickenBottomOnce(px = 5){
   chicken.dataset.raised = '1';
 }
 
-/* Прыжок */
+/* ===== ПРЫЖОК КУРИЦЫ (как было) =====
+   На финальном шаге: сразу celebrate + блёстки, попап через POPUP_DELAY_MS */
 function hop(isFinal=false){
-  if (!chicken) return;
   chicken.classList.remove('hop','celebrate');
-  chicken.dataset.finalHop = isFinal ? '1' : '0';
-  void chicken.offsetWidth; // перезапуск keyframes
+  // перезапуск CSS keyframes
+  void chicken.offsetWidth;
   chicken.classList.add('hop');
+
+  if (isFinal) {
+    chicken.classList.add('celebrate'); // сразу после приземления начнёт подпрыгивать (как было)
+    playSparklesOnce();
+    setTimeout(openPopup, POPUP_DELAY_MS);
+  }
 }
 
 /* Флип в монетку */
@@ -673,7 +678,7 @@ function flipToCoin(laneEl) {
   }, 200);
 }
 
-/* Баланс */
+/* Анимация баланса */
 function animateBalance(from, to, ms = 500){
   const start = performance.now();
   function frame(t){
@@ -684,6 +689,8 @@ function animateBalance(from, to, ms = 500){
   }
   requestAnimationFrame(frame);
 }
+
+/* Точное умножение */
 function preciseMul(a, b){
   const aStr = String(a), bStr = String(b);
   const aDec = (aStr.split('.')[1] || '').length;
@@ -693,28 +700,32 @@ function preciseMul(a, b){
   return (fA * fB) / Math.pow(10, aDec + bDec);
 }
 
-/* Блёстки */
+/* ===== SPARKLES ===== */
 function playSparklesOnce(){
   if (!sparklesEl || sparklesPlayed) return;
   sparklesPlayed = true;
+
   sparkleLayers.forEach(layer => {
     layer.style.animation = 'none';
     void layer.offsetWidth;
     layer.style.animation = '';
     layer.style.animationPlayState = 'running';
   });
+
   sparklesEl.classList.add('active');
   sparklesEl.style.opacity = '1';
+
   setTimeout(() => {
     sparklesEl.classList.remove('active');
     sparklesEl.style.opacity = '';
   }, 3500);
 }
 
-/* Попап */
+/* ===== POPUP ===== */
 function openPopup(){
   if (!popup || popupShown) return;
   popupShown = true;
+
   popup.style.display = 'block';
   popup.style.visibility = 'visible';
   popup.style.opacity = '1';
@@ -724,6 +735,7 @@ function openPopup(){
     popupWin.style.display = 'block';
     popupWin.style.transform = 'scale(0.92)';
     popupWin.style.opacity = '0';
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         popupWin.style.transition = 'transform .25s ease, opacity .25s ease';
@@ -750,6 +762,7 @@ function closePopup(){
       popupWin.style.transition = '';
       popupWin.style.transform = '';
     }
+    // можно продолжать игру после попапа
     isAnimating = false;
     if (goBtn) goBtn.disabled = (step >= lanes.length);
   }, 180);
@@ -770,82 +783,62 @@ window.addEventListener('load', () => {
   const spawnCenterScreen = centerXInTrack(spawnEl) + trackX;
   placeChickenAtScreenX(spawnCenterScreen);
   balanceEl.textContent = balanceValue.toFixed(2) + ' EUR';
-  raiseChickenBottomOnce(5); // +5px один раз
-});
 
-/* ===== ФИНАЛ: celebrate сразу, попап ПОСЛЕ celebrate ===== */
-chicken.addEventListener('animationend', (e) => {
-  if (e.target !== chicken) return;
-  if (e.animationName && e.animationName !== 'chickenHop') return;
-
-  const isFinal = chicken.dataset.finalHop === '1';
-  if (!isFinal) return;
-  if (finalCelebrateDone) return;
-
-  finalCelebrateDone = true;
-
-  // 1) мгновенно запускаем celebrate
-  chicken.classList.add('celebrate');
-
-  // 2) блёстки сразу
-  playSparklesOnce();
-
-  // 3) даём курице «попрыгать» заданное время, затем открываем попап
-  setTimeout(() => {
-    openPopup();
-    // при желании можно остановить «празднование»:
-    // chicken.classList.remove('celebrate');
-  }, CELEBRATE_BEFORE_POPUP_MS);
+  // +5px к bottom один раз
+  raiseChickenBottomOnce(5);
 });
 
 /* ===== MAIN CLICK ===== */
 goBtn.addEventListener('click', () => {
   if (step >= lanes.length) return;
-  if (isAnimating || popupShown) return;
 
+  // анти-спам и запрет кликов во время анимации/попапа
+  if (isAnimating || popupShown) return;
   isAnimating = true;
   if (goBtn) goBtn.disabled = true;
   if (cashBtn && step === 0) cashBtn.classList.remove('disabled');
 
   const targetLane = lanes[step];
 
-  // 1) сдвиг трека
+  // 1) плавный сдвиг трека
   const laneCenterTrack   = centerXInTrack(targetLane);
   const anchorCenterTrack = centerXInTrack(spawnEl);
   trackX = clampTrackX(-(laneCenterTrack - anchorCenterTrack));
   track.style.transform = `translateX(${trackX}px)`;
 
-  // 2) прыжок
+  // 2) курица прыгает
   const laneCenterScreen = laneCenterTrack + trackX;
   placeChickenAtScreenX(laneCenterScreen);
 
   const isLastStep = (step === lanes.length - 1);
-  if (isLastStep) finalCelebrateDone = false;
   hop(isLastStep);
 
-  // 3) флип
+  // 3) флип в монетку (не меняем)
   setTimeout(() => { flipToCoin(targetLane); }, 120);
 
   // 4) баланс
   const mult = MULTS[step] || 1;
   const from = balanceValue;
   let next   = preciseMul(balanceValue, mult);
-  if (isLastStep) next = 1000;
+  if (isLastStep) next = 1000; // финальный выигрыш
   balanceValue = next;
   animateBalance(from, next, 500);
 
   step++;
 
-  // Разблокировка, если не финал
-  const UNLOCK_MS = 650;
+  // Разблокировка кнопки (если не финал)
+  const UNLOCK_MS = 650; // соответствует твоим текущим анимациям
   if (!isLastStep) {
     setTimeout(() => {
       isAnimating = false;
-      if (!popupShown && step < lanes.length && goBtn) goBtn.disabled = false;
+      if (!popupShown && step < lanes.length && goBtn) {
+        goBtn.disabled = false;
+      }
     }, UNLOCK_MS);
   }
 });
 </script>
+
 
 
 
