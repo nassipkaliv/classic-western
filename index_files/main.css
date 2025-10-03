@@ -2082,6 +2082,15 @@ html.is-loading body {
   animation: chickenCelebrate 0.4s ease-in-out infinite; 
 }
 
+.chicken {
+  will-change: transform, left;
+  transform: translateZ(0); /* форсируем слой */
+}
+#popup__window_1,
+#popup__window_2 {
+  will-change: transform, opacity;
+}
+
 .button:disabled,
 .button.disabled {
   opacity: .6;

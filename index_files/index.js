@@ -153,7 +153,7 @@ function showSecondPopup() {
     ch: { countWB: '2000 CHF' },
     li: { countWB: '2000 CHF' },
     bg: { countWB: '4000 BGN' },
-    default: { countWB: '2000 EUR' },
+    default: { countWB: '1000 EUR' },
   }
 
   const inputValue = data[country]
