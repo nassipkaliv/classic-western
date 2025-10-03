@@ -385,7 +385,7 @@ html .ro {
   -webkit-transform: translateX(-50%);
 	-ms-transform: translateX(-50%);
 	transform: translateX(-50%);
-  bottom: 10%;
+  bottom: 5%;
   z-index: 15;
 }
 
@@ -1306,18 +1306,36 @@ html.vn .button span {
   color: #fff;
 }
 
-.preloader {
-	width: 5em;
-	height: 5em;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	margin: auto;
-	z-index: 6
+html.is-loading body {
+  visibility: hidden;
+  opacity: 0;
+  overflow: hidden;
 }
 
+/* Полноэкранный прелоадер поверх всего */
+.preloader{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e39f6e; /* твой фон прелоадера */
+  z-index: 9999;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .6s ease, visibility .6s ease;
+}
+
+.preloader img{
+  width: 5rem;
+  height: 5rem;
+}
+
+/* Скрытие прелоадера */
+.preloader.hide{
+  opacity: 0;
+  visibility: hidden;
+}
 .blur__wrap {
 	position: absolute;
 	right: 0;
@@ -1408,7 +1426,6 @@ html.vn .button span {
 	-webkit-transition: all .3s ease-in-out;
 	transition: all .3s ease-in-out;
 	overflow: hidden;
-	min-height: 6rem;
 	border: none;
 	cursor: pointer;
 	z-index: 1
@@ -1491,7 +1508,7 @@ html.vn .button span {
   box-shadow: inset 0 4px 4px 0 rgba(0, 0, 0, 0.25);
   transform: skew(-10deg);
   display: inline-block;
-  padding: 12px 30px;
+  padding: 4px 30px;
   color: #fff;
 }
 
@@ -1500,7 +1517,7 @@ html.vn .button span {
   border: 3px solid #ed4c2b;
   transform: skew(-10deg);
   display: inline-block;
-  padding: 12px 30px;
+  padding: 4px 30px;
   color: #fff;
 }
 
@@ -1508,7 +1525,7 @@ html.vn .button span {
 .claim-btn span {
 	font-family: var(--third-family);
 	font-weight: 400;
-	font-size: 32px !important;
+	font-size: 30px !important;
 	color: #fff;
   white-space: nowrap;
 }
@@ -1521,7 +1538,7 @@ html.vn .button span {
 .go-btn span {
   font-family: var(--third-family);
 	font-weight: 400;
-	font-size: 32px !important;
+	font-size: 30px !important;
 	color: #fff;
   text-align: center; 
 }
@@ -2134,11 +2151,11 @@ html.vn .button span {
   }
   .chicken {
     width: 80px;    
-		bottom: 11px; 
+		bottom: 15px; 
   }
   .lane {
-    width: 90px;
-    height: 90px;
+    width: 75px;
+    height: 75px;
 		bottom: 140px;
 	}
 
@@ -2230,7 +2247,8 @@ html.vn .button span {
 
 	.btns .button {
 		width: 90%;
-		margin: 0 auto 4.5rem
+		margin: 0 auto 4.5rem;
+		height: fit-content;
 	}
 
   .go-btn span {
@@ -2385,12 +2403,12 @@ html.vn .button span {
 @media (max-width: 540px) {
     .game-container {
         width: 500px;
-				height: 36rem;
+				height: 33rem;
 			}
 
 
 			#animation_container {
-				margin-bottom: 5rem;
+				margin-bottom: 3.5rem;
 			}
 
 			.btns .button {

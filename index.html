@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-country="pl" class="webp webp-alpha webp-animation webp-lossless curr_pl ru hide" data-lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--<base href="/assets/-pre--chiken-5/index.html">--><base href=".">
+<html lang="en" data-country="en" class="webp webp-alpha webp-animation webp-lossless curr_pl en hide" data-lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--<base href="/assets/-pre--chiken-5/index.html">--><base href=".">
     
     <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover" name="viewport">
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <meta name="format-detection" content="telephone=no">
     <title>Spiele</title>
+    <script>document.documentElement.classList.add('is-loading');</script>
     <link rel="icon" type="image/png" href="./pics/favicon-96x96.png" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="./pics/favicon.svg">
     <link rel="shortcut icon" href="./pics/favicon.ico">
@@ -13,7 +14,7 @@
   </head>
 
   <body onload="init();">
-    <div class="preloader hide">
+    <div class="preloader">
       <img alt="preloader" src="./index_files/preloader.svg">
     </div>
     <div class="blur__wrap">
@@ -540,6 +541,41 @@
   <script src="./index_files/particles.min.js"></script>
   <script src="./index_files/index.js"></script>
 
+
+<script>
+  // Фолбэк: если window.load «не пришёл» (медленный ресурс), снимем прелоадер по таймауту
+  const PRELOADER_MAX_MS = 10000; // 10s запас
+  let preloaderTimer = setTimeout(doneLoading, PRELOADER_MAX_MS);
+
+  // Когда DOM готов — убеждаемся, что прелоадер точно показан
+  document.addEventListener('DOMContentLoaded', () => {
+    const pre = document.querySelector('.preloader');
+    if (pre) pre.classList.remove('hide');
+  });
+
+  // Когда всё (включая картинки/шрифты) загрузилось — прячем прелоадер
+  window.addEventListener('load', () => {
+    clearTimeout(preloaderTimer);
+    doneLoading();
+  });
+
+  function doneLoading(){
+    const html = document.documentElement;
+    const pre = document.querySelector('.preloader');
+    if (!pre) return;
+
+    // Плавно скрываем прелоадер
+    pre.classList.add('hide');
+
+    // Возвращаем контент
+    html.classList.remove('is-loading');
+
+    // На всякий случай — если были выставлены инлайны где-то ещё
+    document.body.style.visibility = '';
+    document.body.style.opacity = '';
+    document.body.style.overflow = '';
+  }
+</script>
 
 
   <script>
