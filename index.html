@@ -578,11 +578,12 @@
 </script>
 
 <script>
-/* ===== НАСТРОЙКИ ===== */
-const POPUP_DELAY_MS = 1200;       // задержка перед попапом после победного прыжка
-const START_BOTTOM_PX = 13;        // стартовая высота курицы
+/* ===================== НАСТРОЙКИ ===================== */
+const POPUP_DELAY_MS   = 1200;  // задержка перед попапом после победного прыжка
+const START_BOTTOM_PX  = 13;    // стартовая высота курицы
+const SPAWN_SHIFT_PX   = -10;   // сдвиг спавна влево (нужно -10px)
 
-/* ===== DOM ===== */
+/* ===================== DOM ===================== */
 const goBtn       = document.getElementById('go-btn');
 const cashBtn     = document.getElementById('cash-btn');
 const balanceEl   = document.getElementById('balance');
@@ -601,16 +602,14 @@ const sparkleLayers = sparklesEl ? [...sparklesEl.querySelectorAll('.sparkles-la
 const popup       = document.getElementById('popup');
 const popupWin    = document.getElementById('popup__window_1');
 
-/* ===== FLAGS ===== */
-let isAnimating = false;
-let sparklesPlayed = false;
-let popupShown = false;
+/* ===================== FLAGS/STATE ===================== */
+let isAnimating   = false;
+let sparklesPlayed= false;
+let popupShown    = false;
 
-/* ===== STATE ===== */
-let step = 0;
-let trackX = 0;
-// const chickenHalf = 60; // БОЛЬШЕ НЕ ИСПОЛЬЗУЕМ фикс — считаем динамически
-const MULTS = [1.50, 1.85, 1.95, 2.00, 2.10, 2.20];
+let step          = 0;
+let trackX        = 0;
+const MULTS       = [1.50, 1.85, 1.95, 2.00, 2.10, 2.20];
 
 let balanceValue = (function () {
   const txt = (balanceEl?.textContent || '20').replace(/[^\d.,]/g, '').replace(',', '.');
@@ -618,52 +617,51 @@ let balanceValue = (function () {
   return Number.isFinite(n) ? n : 20;
 })();
 
-/* ===== HELPERS ===== */
-// Текущая половина ширины спрайта (учитывает responsive-изменения)
+/* ===================== HELPERS ===================== */
+// Текущая половина ширины спрайта (учитывает responsive)
 function getChickenHalf(){
   if (!chicken) return 60;
   const w = parseFloat(getComputedStyle(chicken).width) || chicken.getBoundingClientRect().width || 120;
   return w / 2;
 }
-// Центр элемента в координатах track (для .lane/.spawn style.left — это уже центр)
+
+// Центр элемента в координатах track (для .lane/.spawn style.left — это центр)
 function centerXInTrack(el){
   if (!el) return 0;
   if (el.classList.contains('lane') || el.classList.contains('spawn')) {
-    return parseFloat(el.style.left || '0') || 0; // это центр, т.к. .lane со смещением translateX(-50%)
+    return parseFloat(el.style.left || '0') || 0; // .lane имеет translateX(-50%), поэтому left — это центр
   }
   const r  = el.getBoundingClientRect();
   const rt = track.getBoundingClientRect();
   return r.left + r.width/2 - rt.left;
 }
+
 function clampTrackX(x){
   const maxTravel = track.offsetWidth - container.clientWidth;
   return Math.max(-maxTravel, Math.min(0, x));
 }
+
 // Поставить курицу так, чтобы её центр совпал с X на экране
 function placeChickenAtScreenX(centerXScreen){
   const half = getChickenHalf();
   chicken.style.left = (centerXScreen - half) + 'px';
 }
 
-/* Одноразовый аплифт — БОЛЬШЕ НЕ НУЖЕН, мы задаём абсолютный bottom
-function raiseChickenBottomOnce(px = 5){ ... }
-*/
-
-/* ===== ПРЫЖОК КУРИЦЫ (как было) =====
-   На финальном шаге: celebrate + блёстки, попап через POPUP_DELAY_MS */
+/* ===================== CORE FX ===================== */
+// Прыжок курицы (финал: сразу celebrate, sparkles, потом popup)
 function hop(isFinal=false){
   chicken.classList.remove('hop','celebrate');
-  void chicken.offsetWidth; // перезапуск keyframes
+  void chicken.offsetWidth; // рестарт keyframes
   chicken.classList.add('hop');
 
   if (isFinal) {
-    chicken.classList.add('celebrate'); // сразу после приземления начнёт подпрыгивать (как было)
+    chicken.classList.add('celebrate');
     playSparklesOnce();
     setTimeout(openPopup, POPUP_DELAY_MS);
   }
 }
 
-/* Флип в монетку */
+// Флип в монетку
 function flipToCoin(laneEl) {
   if (laneEl.classList.contains('gold-egg')) return;
   if (laneEl.classList.contains('flipped')) return;
@@ -682,7 +680,7 @@ function flipToCoin(laneEl) {
   }, 200);
 }
 
-/* Анимация баланса */
+// Анимация баланса
 function animateBalance(from, to, ms = 500){
   const start = performance.now();
   function frame(t){
@@ -694,7 +692,7 @@ function animateBalance(from, to, ms = 500){
   requestAnimationFrame(frame);
 }
 
-/* Точное умножение */
+// Точное умножение
 function preciseMul(a, b){
   const aStr = String(a), bStr = String(b);
   const aDec = (aStr.split('.')[1] || '').length;
@@ -704,7 +702,7 @@ function preciseMul(a, b){
   return (fA * fB) / Math.pow(10, aDec + bDec);
 }
 
-/* ===== SPARKLES ===== */
+/* ===================== SPARKLES ===================== */
 function playSparklesOnce(){
   if (!sparklesEl || sparklesPlayed) return;
   sparklesPlayed = true;
@@ -725,7 +723,7 @@ function playSparklesOnce(){
   }, 3500);
 }
 
-/* ===== POPUP ===== */
+/* ===================== POPUP ===================== */
 function openPopup(){
   if (!popup || popupShown) return;
   popupShown = true;
@@ -739,7 +737,6 @@ function openPopup(){
     popupWin.style.display = 'block';
     popupWin.style.transform = 'scale(0.92)';
     popupWin.style.opacity = '0';
-
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         popupWin.style.transition = 'transform .25s ease, opacity .25s ease';
@@ -766,7 +763,6 @@ function closePopup(){
       popupWin.style.transition = '';
       popupWin.style.transform = '';
     }
-    // можно продолжать игру после попапа
     isAnimating = false;
     if (goBtn) goBtn.disabled = (step >= lanes.length);
   }, 180);
@@ -782,24 +778,28 @@ if (popup) {
   });
 }
 
-/* ===== INIT ===== */
+/* ===================== INIT ===================== */
 window.addEventListener('load', () => {
-  // Стартовая высота строго 13px
+  // 1) Сдвигаем спавн влево на 10px ДО всех расчётов/рескейла
+  const rawSpawnLeft = parseFloat(spawnEl.style.left || '0') || 0;
+  spawnEl.style.left = (rawSpawnLeft + SPAWN_SHIFT_PX) + 'px';
+
+  // 2) Стартовая высота строго 13px
   chicken.style.bottom = START_BOTTOM_PX + 'px';
 
-  // Стартовая позиция по центру спавна (НЕ фиксируем left:40px)
+  // 3) Стартовая позиция по центру (уже сдвинутого) спавна
   const spawnCenterScreen = centerXInTrack(spawnEl) + trackX;
   placeChickenAtScreenX(spawnCenterScreen);
 
+  // 4) Баланс
   balanceEl.textContent = balanceValue.toFixed(2) + ' EUR';
 });
 
-/* ===== MAIN CLICK ===== */
+/* ===================== MAIN CLICK ===================== */
 goBtn.addEventListener('click', () => {
   if (step >= lanes.length) return;
+  if (isAnimating || popupShown) return; // анти-спам
 
-  // анти-спам и запрет кликов во время анимации/попапа
-  if (isAnimating || popupShown) return;
   isAnimating = true;
   if (goBtn) goBtn.disabled = true;
   if (cashBtn && step === 0) cashBtn.classList.remove('disabled');
@@ -812,7 +812,7 @@ goBtn.addEventListener('click', () => {
   trackX = clampTrackX(-(laneCenterTrack - anchorCenterTrack));
   track.style.transform = `translateX(${trackX}px)`;
 
-  // 2) курица прыгает (в центр lane на экране)
+  // 2) курица прыгает (точно в центр lane на экране)
   const laneCenterScreen = laneCenterTrack + trackX;
   placeChickenAtScreenX(laneCenterScreen);
 
@@ -843,7 +843,52 @@ goBtn.addEventListener('click', () => {
     }, UNLOCK_MS);
   }
 });
+
+/* ===================== РЕСПОНСИВ ТРЕКА ===================== */
+const BASE_TRACK_WIDTH = 1452; // исходная ширина (из CSS)
+let resizeRaf = 0;
+
+/* Масштабируем left у .lane и .spawn (без грубого округления) */
+function rescaleTrackLayout() {
+  if (!window.track) window.track = document.getElementById('track');
+  if (!window.spawnEl) window.spawnEl = document.querySelector('.spawn');
+  if (!window.lanes) window.lanes = [...document.querySelectorAll('.lane')];
+
+  const trackEl = window.track;
+  if (!trackEl) return;
+
+  const k = trackEl.offsetWidth / BASE_TRACK_WIDTH;
+
+  const els = [window.spawnEl, ...window.lanes].filter(Boolean);
+  els.forEach(el => {
+    if (!el.dataset.baseLeft) {
+      const raw = parseFloat(el.style.left || '0') || 0;
+      el.dataset.baseLeft = String(raw);
+    }
+    const baseLeft = parseFloat(el.dataset.baseLeft) || 0;
+    el.style.left = (baseLeft * k).toFixed(2) + 'px';
+  });
+
+  // Если игра ещё не началась — после рескейла центрируем курицу по спавну
+  if (step === 0) {
+    const m = getComputedStyle(track).transform;
+    const tx = m && m !== 'none' ? parseFloat(m.split(',')[4]) || 0 : trackX;
+    const spawnCenterScreen = centerXInTrack(spawnEl) + tx;
+    placeChickenAtScreenX(spawnCenterScreen);
+  }
+}
+
+/* Дебаунс через rAF */
+function rescaleOnResize() {
+  if (resizeRaf) cancelAnimationFrame(resizeRaf);
+  resizeRaf = requestAnimationFrame(rescaleTrackLayout);
+}
+
+/* Запуск рескейла */
+window.addEventListener('load', rescaleTrackLayout);
+window.addEventListener('resize', rescaleOnResize);
 </script>
+
 
 <script>
 /* ==== НАСТРОЙКИ ДЛЯ РЕСПОНСИВА ТРЕКА ==== */
