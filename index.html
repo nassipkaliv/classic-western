@@ -844,6 +844,10 @@ goBtn.addEventListener('click', () => {
   }
 });
 
+</script>
+
+
+<script>
 /* ===================== РЕСПОНСИВ ТРЕКА ===================== */
 const BASE_TRACK_WIDTH = 1452; // исходная ширина (из CSS)
 let resizeRaf = 0;
@@ -885,52 +889,6 @@ function rescaleOnResize() {
 }
 
 /* Запуск рескейла */
-window.addEventListener('load', rescaleTrackLayout);
-window.addEventListener('resize', rescaleOnResize);
-</script>
-
-
-<script>
-/* ==== НАСТРОЙКИ ДЛЯ РЕСПОНСИВА ТРЕКА ==== */
-const BASE_TRACK_WIDTH = 1452; // исходная ширина (из CSS)
-let resizeRaf = 0;
-
-/* Считает коэффициент и масштабирует left у .lane и .spawn (без грубого округления) */
-function rescaleTrackLayout() {
-  if (!window.track) window.track = document.getElementById('track');
-  if (!window.spawnEl) window.spawnEl = document.querySelector('.spawn');
-  if (!window.lanes) window.lanes = [...document.querySelectorAll('.lane')];
-
-  const trackEl = window.track;
-  if (!trackEl) return;
-
-  const k = trackEl.offsetWidth / BASE_TRACK_WIDTH;
-
-  const els = [window.spawnEl, ...window.lanes].filter(Boolean);
-  els.forEach(el => {
-    if (!el.dataset.baseLeft) {
-      const raw = parseFloat(el.style.left || '0') || 0;
-      el.dataset.baseLeft = String(raw);
-    }
-    const baseLeft = parseFloat(el.dataset.baseLeft) || 0;
-    // Без Math.round — точнее центровка, меньше систематического сдвига на 3–5px
-    el.style.left = (baseLeft * k).toFixed(2) + 'px';
-  });
-
-  // После рескейла — обновим текущую позицию курицы к ближайшей логической точке, если она стоит на спавне (старт)
-  // (Опционально: можно оставить как есть; ниже — мягкая попытка не трогать текущий ход.)
-  if (step === 0) {
-    const spawnCenterScreen = centerXInTrack(spawnEl) + (parseFloat(getComputedStyle(track).transform.split(',')[4]) || trackX);
-    placeChickenAtScreenX(spawnCenterScreen);
-  }
-}
-
-function rescaleOnResize() {
-  if (resizeRaf) cancelAnimationFrame(resizeRaf);
-  resizeRaf = requestAnimationFrame(rescaleTrackLayout);
-}
-
-/* Включаем масштабирование при загрузке и ресайзе */
 window.addEventListener('load', rescaleTrackLayout);
 window.addEventListener('resize', rescaleOnResize);
 </script>
