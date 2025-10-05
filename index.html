@@ -577,10 +577,10 @@
   }
 </script>
 
-
 <script>
 /* ===== НАСТРОЙКИ ===== */
-const POPUP_DELAY_MS = 1200; // задержка перед попапом после победного прыжка (как было)
+const POPUP_DELAY_MS = 1200;       // задержка перед попапом после победного прыжка
+const START_BOTTOM_PX = 13;        // стартовая высота курицы
 
 /* ===== DOM ===== */
 const goBtn       = document.getElementById('go-btn');
@@ -609,7 +609,7 @@ let popupShown = false;
 /* ===== STATE ===== */
 let step = 0;
 let trackX = 0;
-const chickenHalf = 60;
+// const chickenHalf = 60; // БОЛЬШЕ НЕ ИСПОЛЬЗУЕМ фикс — считаем динамически
 const MULTS = [1.50, 1.85, 1.95, 2.00, 2.10, 2.20];
 
 let balanceValue = (function () {
@@ -619,9 +619,17 @@ let balanceValue = (function () {
 })();
 
 /* ===== HELPERS ===== */
+// Текущая половина ширины спрайта (учитывает responsive-изменения)
+function getChickenHalf(){
+  if (!chicken) return 60;
+  const w = parseFloat(getComputedStyle(chicken).width) || chicken.getBoundingClientRect().width || 120;
+  return w / 2;
+}
+// Центр элемента в координатах track (для .lane/.spawn style.left — это уже центр)
 function centerXInTrack(el){
+  if (!el) return 0;
   if (el.classList.contains('lane') || el.classList.contains('spawn')) {
-    return parseInt(el.style.left || '0', 10) || 0;
+    return parseFloat(el.style.left || '0') || 0; // это центр, т.к. .lane со смещением translateX(-50%)
   }
   const r  = el.getBoundingClientRect();
   const rt = track.getBoundingClientRect();
@@ -631,25 +639,21 @@ function clampTrackX(x){
   const maxTravel = track.offsetWidth - container.clientWidth;
   return Math.max(-maxTravel, Math.min(0, x));
 }
-function placeChickenAtScreenX(x){
-  chicken.style.left = (x - chickenHalf) + 'px';
+// Поставить курицу так, чтобы её центр совпал с X на экране
+function placeChickenAtScreenX(centerXScreen){
+  const half = getChickenHalf();
+  chicken.style.left = (centerXScreen - half) + 'px';
 }
 
-/* Одноразовое +5px к bottom курицы */
-function raiseChickenBottomOnce(px = 5){
-  if (!chicken) return;
-  if (chicken.dataset.raised === '1') return;
-  const cur = parseFloat(getComputedStyle(chicken).bottom) || 0;
-  chicken.style.bottom = (cur + px) + 'px';
-  chicken.dataset.raised = '1';
-}
+/* Одноразовый аплифт — БОЛЬШЕ НЕ НУЖЕН, мы задаём абсолютный bottom
+function raiseChickenBottomOnce(px = 5){ ... }
+*/
 
 /* ===== ПРЫЖОК КУРИЦЫ (как было) =====
-   На финальном шаге: сразу celebrate + блёстки, попап через POPUP_DELAY_MS */
+   На финальном шаге: celebrate + блёстки, попап через POPUP_DELAY_MS */
 function hop(isFinal=false){
   chicken.classList.remove('hop','celebrate');
-  // перезапуск CSS keyframes
-  void chicken.offsetWidth;
+  void chicken.offsetWidth; // перезапуск keyframes
   chicken.classList.add('hop');
 
   if (isFinal) {
@@ -780,12 +784,14 @@ if (popup) {
 
 /* ===== INIT ===== */
 window.addEventListener('load', () => {
+  // Стартовая высота строго 13px
+  chicken.style.bottom = START_BOTTOM_PX + 'px';
+
+  // Стартовая позиция по центру спавна (НЕ фиксируем left:40px)
   const spawnCenterScreen = centerXInTrack(spawnEl) + trackX;
   placeChickenAtScreenX(spawnCenterScreen);
-  balanceEl.textContent = balanceValue.toFixed(2) + ' EUR';
 
-  // +5px к bottom один раз
-  raiseChickenBottomOnce(5);
+  balanceEl.textContent = balanceValue.toFixed(2) + ' EUR';
 });
 
 /* ===== MAIN CLICK ===== */
@@ -806,14 +812,14 @@ goBtn.addEventListener('click', () => {
   trackX = clampTrackX(-(laneCenterTrack - anchorCenterTrack));
   track.style.transform = `translateX(${trackX}px)`;
 
-  // 2) курица прыгает
+  // 2) курица прыгает (в центр lane на экране)
   const laneCenterScreen = laneCenterTrack + trackX;
   placeChickenAtScreenX(laneCenterScreen);
 
   const isLastStep = (step === lanes.length - 1);
   hop(isLastStep);
 
-  // 3) флип в монетку (не меняем)
+  // 3) флип в монетку
   setTimeout(() => { flipToCoin(targetLane); }, 120);
 
   // 4) баланс
@@ -827,7 +833,7 @@ goBtn.addEventListener('click', () => {
   step++;
 
   // Разблокировка кнопки (если не финал)
-  const UNLOCK_MS = 650; // соответствует твоим текущим анимациям
+  const UNLOCK_MS = 650;
   if (!isLastStep) {
     setTimeout(() => {
       isAnimating = false;
@@ -839,9 +845,50 @@ goBtn.addEventListener('click', () => {
 });
 </script>
 
+<script>
+/* ==== НАСТРОЙКИ ДЛЯ РЕСПОНСИВА ТРЕКА ==== */
+const BASE_TRACK_WIDTH = 1452; // исходная ширина (из CSS)
+let resizeRaf = 0;
 
+/* Считает коэффициент и масштабирует left у .lane и .spawn (без грубого округления) */
+function rescaleTrackLayout() {
+  if (!window.track) window.track = document.getElementById('track');
+  if (!window.spawnEl) window.spawnEl = document.querySelector('.spawn');
+  if (!window.lanes) window.lanes = [...document.querySelectorAll('.lane')];
 
+  const trackEl = window.track;
+  if (!trackEl) return;
 
+  const k = trackEl.offsetWidth / BASE_TRACK_WIDTH;
+
+  const els = [window.spawnEl, ...window.lanes].filter(Boolean);
+  els.forEach(el => {
+    if (!el.dataset.baseLeft) {
+      const raw = parseFloat(el.style.left || '0') || 0;
+      el.dataset.baseLeft = String(raw);
+    }
+    const baseLeft = parseFloat(el.dataset.baseLeft) || 0;
+    // Без Math.round — точнее центровка, меньше систематического сдвига на 3–5px
+    el.style.left = (baseLeft * k).toFixed(2) + 'px';
+  });
+
+  // После рескейла — обновим текущую позицию курицы к ближайшей логической точке, если она стоит на спавне (старт)
+  // (Опционально: можно оставить как есть; ниже — мягкая попытка не трогать текущий ход.)
+  if (step === 0) {
+    const spawnCenterScreen = centerXInTrack(spawnEl) + (parseFloat(getComputedStyle(track).transform.split(',')[4]) || trackX);
+    placeChickenAtScreenX(spawnCenterScreen);
+  }
+}
+
+function rescaleOnResize() {
+  if (resizeRaf) cancelAnimationFrame(resizeRaf);
+  resizeRaf = requestAnimationFrame(rescaleTrackLayout);
+}
+
+/* Включаем масштабирование при загрузке и ресайзе */
+window.addEventListener('load', rescaleTrackLayout);
+window.addEventListener('resize', rescaleOnResize);
+</script>
 
 
 <div id="preloadjs-container" style="visibility: hidden; position: absolute; height: 10px; width: 10px; overflow: hidden; transform: translate(-10px, -10px);"></div>
