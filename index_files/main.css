@@ -392,8 +392,8 @@ html .ro {
 .lang_switcher_outer {
   font-family: var(--font-family);
   position: absolute;
-  right: -3rem;
-  top: 5.5rem;
+  right: -2.5rem;
+  top: 5.9rem;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
@@ -402,7 +402,7 @@ html .ro {
 	width: fit-content;
 	padding-left: 4px;
 	padding-right: 0px;
-	height: 33px;
+	height: 28px;
 	z-index: 5;
 	cursor: pointer;
 	text-transform: uppercase;
@@ -2115,7 +2115,7 @@ html.is-loading body {
 
 .cowboy {
 	position: relative;
-	bottom: 5px;
+	bottom: 60px;
 	left: 50%;
 	transform: translateX(-52%);
 	width: 50%;
@@ -2406,7 +2406,7 @@ html.is-loading body {
 
 @media (max-width: 540px) {
     .game-container {
-        width: 100%;
+        width: 98%;
 				height: 180px;
 			}
 
