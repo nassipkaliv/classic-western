@@ -404,6 +404,7 @@ html .ro {
 	padding-right: 0px;
 	z-index: 5;
 	cursor: pointer;
+	height: 28px;
 	text-transform: uppercase;
 	background: #022aae;
 	display: flex;
@@ -444,6 +445,7 @@ html .ro {
     color: #fff;
 		gap: 8px;
 		padding: 4px;
+		padding-bottom: 3px;
 }
 
 .lang_switcher_outer .lang_switcher .curr_lang {
