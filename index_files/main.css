@@ -392,7 +392,7 @@ html .ro {
 .lang_switcher_outer {
   font-family: var(--font-family);
   position: absolute;
-  right: -15px;
+  right: -4%;
   top: 5.9rem;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
@@ -453,10 +453,16 @@ html .ro {
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
+	justify-content: center;
 	-webkit-box-align: center;
 	-ms-flex-align: center;
 	align-items: center;
 	width: 100%;
+}
+
+.strelka {
+	display: flex;
+	align-items: center;
 }
 
 .lang_switcher_outer .lang_switcher .curr_lang span {
