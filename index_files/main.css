@@ -389,27 +389,39 @@ html .ro {
   z-index: 15;
 }
 
+.header-container {
+  position: relative;
+  display: flex;
+  align-items: center;     
+  justify-content: center;
+  width: 98%;
+}
+
+.chicken_road_logo {
+  max-height: 28px;
+  display: block;
+}
+
 .lang_switcher_outer {
   font-family: var(--font-family);
   position: absolute;
-  right: -4%;
-  top: 5.9rem;
-  -webkit-transform: translateX(-50%);
-  -ms-transform: translateX(-50%);
-  transform: translateX(-50%);
-  border: 2px solid #ed4c2b;
-	border-radius: 10px;
-	width: fit-content;
-	padding-left: 0px;
-	padding-right: 0px;
-	z-index: 5;
-	cursor: pointer;
-	height: 28px;
-	text-transform: uppercase;
-	background: #022aae;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+  right: 0;                
+  top: 50%;               
+  transform: translateY(-50%); 
+  border: 2px solid #ff8a18;
+  border-radius: 10px;
+  width: fit-content;
+  padding-left: 0;
+  padding-right: 0;
+  z-index: 5;
+  cursor: pointer;
+  height: 28px;
+  text-transform: uppercase;
+  background: #022aae;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .lang_switcher_outer.act .lang_list {
@@ -2161,13 +2173,6 @@ html.is-loading body {
 	position: absolute;
 }
 
-.chicken_road_logo {
-	max-height: 28px;
-	position: absolute;
-	left: 50%;
-	transform: translateX(-52%);
-	top: -16px;
-}
 
 @media (max-width: 600px) {
   .game-container {
