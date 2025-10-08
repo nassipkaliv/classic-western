@@ -2304,7 +2304,10 @@ html.is-loading body {
 		position: relative;
 		min-height: 0;
 		margin-bottom: 0rem;
-		z-index: 1
+		z-index: 1;
+		width: 98%;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.lang_switcher_outer .lang_switcher .curr_lang img {
@@ -2420,7 +2423,7 @@ html.is-loading body {
 
 @media (max-width: 540px) {
     .game-container {
-        width: 98%;
+        width: 100%;
 				height: 180px;
 			}
 
