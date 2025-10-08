@@ -405,7 +405,7 @@ html .ro {
 .lang_switcher_outer {
   font-family: var(--font-family);
   position: absolute;
-  right: 0;                
+  right: -6.2px;               
   top: 50%;               
   transform: translateY(-50%); 
   border: 2px solid #ff8a18;
