@@ -475,7 +475,7 @@ html .ro {
 .strelka {
 	display: flex;
 	align-items: center;
-	margin-top: 1px;
+	margin-top: 1.5px;
 }
 
 .lang_switcher_outer .lang_switcher .curr_lang span {
