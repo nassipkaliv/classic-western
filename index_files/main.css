@@ -456,7 +456,6 @@ html .ro {
     color: #fff;
 		gap: 4px;
 		padding: 4px;
-		padding-bottom: 3px;
 }
 
 .lang_switcher_outer .lang_switcher .curr_lang {
@@ -476,6 +475,7 @@ html .ro {
 .strelka {
 	display: flex;
 	align-items: center;
+	margin-top: 1px;
 }
 
 .lang_switcher_outer .lang_switcher .curr_lang span {
