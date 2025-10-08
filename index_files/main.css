@@ -623,7 +623,7 @@ html .ro {
 	line-height: 150%;
 	letter-spacing: 0.03em;
 	color: #fff;
-  padding-left: 12px;
+  padding-left: 0px;
 }
 
 .lang_list li.curr {
@@ -2387,7 +2387,8 @@ html.is-loading body {
 
 
 	.lang_list li {
-		padding-left: 0em
+		display: flex;
+		justify-content: center;
 	}
 
 	.wrapper {
