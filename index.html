@@ -589,6 +589,7 @@
 const POPUP_DELAY_MS   = 1200;  // задержка перед попапом после победного прыжка
 const START_BOTTOM_PX  = 13;    // стартовая высота курицы
 const SPAWN_SHIFT_PX   = -10;   // сдвиг спавна влево (нужно -10px)
+const COIN_SRC         = 'pics/gold-coin.png';
 
 /* ===================== DOM ===================== */
 const goBtn       = document.getElementById('go-btn');
@@ -654,6 +655,28 @@ function placeChickenAtScreenX(centerXScreen){
   chicken.style.left = (centerXScreen - half) + 'px';
 }
 
+/* ===================== COIN PRELOAD (фикс первого флипа) ===================== */
+const coinPreload = { ready: Promise.resolve() };
+
+(function preloadCoin(){
+  try {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as  = 'image';
+    link.href = COIN_SRC;
+    document.head.appendChild(link);
+  } catch(_) {}
+
+  const img = new Image();
+  img.decoding = 'sync';
+  img.loading  = 'eager';
+  img.src = COIN_SRC;
+  coinPreload.ready = (img.decode ? img.decode() : Promise.resolve()).catch(()=>{});
+})();
+
+/* маленький помощник-таймер */
+function delay(ms){ return new Promise(res => setTimeout(res, ms)); }
+
 /* ===================== CORE FX ===================== */
 // Прыжок курицы (финал: сразу celebrate, sparkles, потом popup)
 function hop(isFinal=false){
@@ -668,23 +691,33 @@ function hop(isFinal=false){
   }
 }
 
-// Флип в монетку
-function flipToCoin(laneEl) {
-  if (laneEl.classList.contains('gold-egg')) return;
-  if (laneEl.classList.contains('flipped')) return;
+// Флип в монетку (плавность остаётся прежней: 200мс схлоп + 200мс раскрытие)
+async function flipToCoin(laneEl) {
+  if (!laneEl || laneEl.classList.contains('gold-egg') || laneEl.classList.contains('flipped')) return;
 
   const img = laneEl.querySelector('img');
+  if (!img) return;
+
   laneEl.classList.add('flipped');
 
+  // шаг 1: схлопывание — 200мс (как в CSS)
   img.classList.add('flip-out');
-  setTimeout(() => {
-    img.src = 'pics/gold-coin.png';
-    img.alt = 'Coin';
-    void img.offsetWidth;
-    img.classList.remove('flip-out');
-    img.classList.add('flip-in');
-    setTimeout(() => img.classList.remove('flip-in'), 200);
-  }, 200);
+
+  // ждём 200мс и одновременно гарантируем декод новой текстуры
+  await Promise.all([ delay(200), coinPreload.ready ]);
+
+  // шаг 2: смена текстуры
+  img.src = COIN_SRC;
+  img.alt = 'Coin';
+
+  // форс-рефлоу, чтобы браузер «увидел» смену
+  void img.offsetWidth;
+
+  // шаг 3: раскрытие — 200мс (как в CSS)
+  img.classList.remove('flip-out');
+  img.classList.add('flip-in');
+
+  setTimeout(() => img.classList.remove('flip-in'), 200);
 }
 
 // Анимация баланса
@@ -826,7 +859,7 @@ goBtn.addEventListener('click', () => {
   const isLastStep = (step === lanes.length - 1);
   hop(isLastStep);
 
-  // 3) флип в монетку
+  // 3) флип в монетку (с фиксированным первым флипом)
   setTimeout(() => { flipToCoin(targetLane); }, 120);
 
   // 4) баланс
@@ -850,7 +883,6 @@ goBtn.addEventListener('click', () => {
     }, UNLOCK_MS);
   }
 });
-
 </script>
 
 

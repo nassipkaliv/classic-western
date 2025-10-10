@@ -2344,7 +2344,7 @@ html.is-loading body {
   }
 
   #animation_container {
-    height: 32rem !important;
+    height: 30rem !important;
     margin-bottom: 5rem;
     width: 100% !important;
   }
